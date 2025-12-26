@@ -1,0 +1,5 @@
+{
+  "name": "BadmintonFlow",
+  "description": "A real-time badminton club scheduling system. Features queue management, automatic matchmaking, court status tracking, and administration tools.",
+  "requestFramePermissions": []
+}
