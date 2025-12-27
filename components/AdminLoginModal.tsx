@@ -30,9 +30,9 @@ const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose, onLo
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity" onClick={onClose}></div>
-      
+
       <div className="relative bg-white dark:bg-gray-800 rounded-3xl w-full max-w-sm p-8 shadow-2xl animate-in zoom-in-95 duration-200">
-        <button 
+        <button
           onClick={onClose}
           className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
         >
@@ -58,12 +58,11 @@ const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose, onLo
                 setPassword(e.target.value);
                 if (error) setError(false);
               }}
-              placeholder="輸入密碼 (預設: 8888)"
-              className={`w-full px-5 py-4 rounded-xl border-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white outline-none transition-all ${
-                error 
-                ? 'border-red-500 focus:ring-4 focus:ring-red-500/20' 
-                : 'border-gray-100 dark:border-gray-700 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10'
-              }`}
+              placeholder="輸入密碼"
+              className={`w-full px-5 py-4 rounded-xl border-2 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white outline-none transition-all ${error
+                  ? 'border-red-500 focus:ring-4 focus:ring-red-500/20'
+                  : 'border-gray-100 dark:border-gray-700 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10'
+                }`}
               autoFocus
             />
             {error && (
@@ -74,15 +73,15 @@ const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose, onLo
             )}
           </div>
 
-          <Button 
-            type="submit" 
-            variant="primary" 
+          <Button
+            type="submit"
+            variant="primary"
             className="w-full py-4 text-md font-bold bg-indigo-600 hover:bg-indigo-700 shadow-xl shadow-indigo-500/30"
             disabled={!password.trim()}
           >
             立即解鎖
           </Button>
-          
+
           <p className="text-center text-[10px] text-gray-400 uppercase tracking-widest font-medium">
             BADMINTON FLOW SECURE ACCESS
           </p>

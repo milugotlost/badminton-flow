@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  PlusCircle, 
+import {
+  PlusCircle,
   MinusCircle,
-  Shield, 
-  ShieldCheck, 
-  Sun, 
-  Moon, 
+  Shield,
+  ShieldCheck,
+  Sun,
+  Moon,
   QrCode,
   Zap,
   Settings,
@@ -77,7 +77,8 @@ function App() {
   };
 
   const handleAdminLogin = (password: string) => {
-    if (password === '8888') {
+    const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD || '8888'; // Default fallback
+    if (password === adminPassword) {
       setIsAdmin(true);
       return true;
     }
@@ -91,7 +92,7 @@ function App() {
 
   return (
     <div className="min-h-screen pb-12 transition-colors duration-200">
-      
+
       {/* 導覽列 */}
       <nav className="sticky top-0 z-30 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -106,7 +107,7 @@ function App() {
             </div>
 
             <div className="flex items-center gap-2 sm:gap-4">
-              <button 
+              <button
                 onClick={toggleTheme}
                 className="p-2 rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 title="切換主題"
@@ -114,12 +115,11 @@ function App() {
                 {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
 
-              <div 
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border cursor-pointer transition-all select-none active:scale-95 ${
-                  isAdmin 
-                    ? 'bg-indigo-50 border-indigo-200 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-800 dark:text-indigo-300' 
+              <div
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border cursor-pointer transition-all select-none active:scale-95 ${isAdmin
+                    ? 'bg-indigo-50 border-indigo-200 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-800 dark:text-indigo-300'
                     : 'border-gray-200 text-gray-500 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
-                }`}
+                  }`}
                 onClick={handleAdminToggleClick}
               >
                 {isAdmin ? <ShieldCheck className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
@@ -133,31 +133,31 @@ function App() {
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
+
         {/* 管理者控制面板 */}
         {isAdmin && (
           <div className="mb-8 p-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm animate-fade-in ring-2 ring-indigo-500/20">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2 text-gray-900 dark:text-white">
-                 <Settings className="w-5 h-5" />
-                 <h2 className="font-bold">管理者控制台</h2>
+                <Settings className="w-5 h-5" />
+                <h2 className="font-bold">管理者控制台</h2>
               </div>
               <div className="flex gap-2">
-                 <Button 
-                    variant="danger" 
-                    size="sm" 
-                    icon={<Trash2 className="w-4 h-4" />}
-                    onClick={() => setIsConfirmResetOpen(true)}
-                    className="bg-red-500 hover:bg-red-600 border-none shadow-md shadow-red-500/20"
-                  >
-                    重置今日名單
-                  </Button>
-                  <Button variant="secondary" size="sm" onClick={() => setIsAdmin(false)}>
-                    登出管理
-                  </Button>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  icon={<Trash2 className="w-4 h-4" />}
+                  onClick={() => setIsConfirmResetOpen(true)}
+                  className="bg-red-500 hover:bg-red-600 border-none shadow-md shadow-red-500/20"
+                >
+                  重置今日名單
+                </Button>
+                <Button variant="secondary" size="sm" onClick={() => setIsAdmin(false)}>
+                  登出管理
+                </Button>
               </div>
             </div>
-            
+
             <div className="flex flex-wrap gap-8 items-start justify-between">
               <div className="flex flex-wrap gap-8">
                 <label className="flex items-center gap-3 cursor-pointer group">
@@ -228,35 +228,35 @@ function App() {
 
           {/* 右側：等候名單 */}
           <div className="lg:col-span-4 space-y-6">
-             <div className="sticky top-24 space-y-6">
-                <Button 
-                  className="w-full py-4 shadow-lg shadow-blue-500/20 text-lg font-bold transition-transform active:scale-95" 
-                  size="lg"
-                  onClick={() => setIsCheckInOpen(true)}
-                  icon={<QrCode className="w-5 h-5" />}
-                >
-                  我要報到 (含管理者)
-                </Button>
+            <div className="sticky top-24 space-y-6">
+              <Button
+                className="w-full py-4 shadow-lg shadow-blue-500/20 text-lg font-bold transition-transform active:scale-95"
+                size="lg"
+                onClick={() => setIsCheckInOpen(true)}
+                icon={<QrCode className="w-5 h-5" />}
+              >
+                我要報到 (含管理者)
+              </Button>
 
-                <QueueList 
-                  queue={queue} 
-                  readyQueue={readyQueue}
-                  courts={courts}
-                  isAdmin={isAdmin} 
-                  isAutoFillReady={isAutoFillReady}
-                  onMoveToReady={db.moveToReady}
-                  onMoveBackToQueue={db.moveBackToQueue}
-                  onCancel={db.cancelPlayer}
-                  onAssignToCourt={db.assignReadyToCourt}
-                />
-             </div>
+              <QueueList
+                queue={queue}
+                readyQueue={readyQueue}
+                courts={courts}
+                isAdmin={isAdmin}
+                isAutoFillReady={isAutoFillReady}
+                onMoveToReady={db.moveToReady}
+                onMoveBackToQueue={db.moveBackToQueue}
+                onCancel={db.cancelPlayer}
+                onAssignToCourt={db.assignReadyToCourt}
+              />
+            </div>
           </div>
         </div>
       </main>
 
       {/* 所有的 Modals */}
-      <CheckInModal 
-        isOpen={isCheckInOpen} 
+      <CheckInModal
+        isOpen={isCheckInOpen}
         onClose={() => setIsCheckInOpen(false)}
         onSubmit={db.checkInUser}
       />
