@@ -20,6 +20,7 @@ import Button from './components/Button';
 import CheckInModal from './components/CheckInModal';
 import AdminLoginModal from './components/AdminLoginModal';
 import ConfirmModal from './components/ConfirmModal';
+import AccessCodeModal from './components/AccessCodeModal';
 
 function App() {
   const [courts, setCourts] = useState<Court[]>([]);
@@ -32,6 +33,15 @@ function App() {
   const [isCheckInOpen, setIsCheckInOpen] = useState(false);
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [isConfirmResetOpen, setIsConfirmResetOpen] = useState(false);
+  const [isAccessGranted, setIsAccessGranted] = useState(false);
+
+  // 檢查訪問權限
+  useEffect(() => {
+    const accessGranted = sessionStorage.getItem('access_granted');
+    if (accessGranted === 'true') {
+      setIsAccessGranted(true);
+    }
+  }, []);
 
   // 初始化深色模式
   useEffect(() => {
@@ -90,6 +100,11 @@ function App() {
     setIsConfirmResetOpen(false);
   };
 
+  // 如果未通過驗證，顯示通行碼畫面
+  if (!isAccessGranted) {
+    return <AccessCodeModal onAccessGranted={() => setIsAccessGranted(true)} />;
+  }
+
   return (
     <div className="min-h-screen pb-12 transition-colors duration-200">
 
@@ -117,8 +132,8 @@ function App() {
 
               <div
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-full border cursor-pointer transition-all select-none active:scale-95 ${isAdmin
-                    ? 'bg-indigo-50 border-indigo-200 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-800 dark:text-indigo-300'
-                    : 'border-gray-200 text-gray-500 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  ? 'bg-indigo-50 border-indigo-200 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-800 dark:text-indigo-300'
+                  : 'border-gray-200 text-gray-500 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                   }`}
                 onClick={handleAdminToggleClick}
               >
