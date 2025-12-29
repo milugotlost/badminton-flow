@@ -10,10 +10,13 @@ import {
   Zap,
   Settings,
   Trash2,
-  Lock
+  Lock,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 import { Court, QueueItem } from './types';
 import * as db from './services/dataService';
+import * as speech from './services/speechService';
 import CourtCard from './components/CourtCard';
 import QueueList from './components/QueueList';
 import Button from './components/Button';
@@ -34,12 +37,21 @@ function App() {
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [isConfirmResetOpen, setIsConfirmResetOpen] = useState(false);
   const [isAccessGranted, setIsAccessGranted] = useState(false);
+  const [isVoiceEnabled, setIsVoiceEnabled] = useState(false);
 
   // 檢查訪問權限
   useEffect(() => {
     const accessGranted = sessionStorage.getItem('access_granted');
     if (accessGranted === 'true') {
       setIsAccessGranted(true);
+    }
+  }, []);
+
+  // 初始化語音播報設定
+  useEffect(() => {
+    const voicePref = localStorage.getItem('voice_enabled');
+    if (voicePref === 'true') {
+      setIsVoiceEnabled(true);
     }
   }, []);
 
@@ -50,11 +62,6 @@ function App() {
       document.documentElement.classList.add('dark');
     }
   }, []);
-
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle('dark');
-  };
 
   // 數據訂閱
   useEffect(() => {
@@ -95,9 +102,32 @@ function App() {
     return false;
   };
 
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+    document.documentElement.classList.toggle('dark');
+  };
+
+  const toggleVoice = () => {
+    const newValue = !isVoiceEnabled;
+    setIsVoiceEnabled(newValue);
+    localStorage.setItem('voice_enabled', String(newValue));
+  };
+
   const handleClearSchedule = () => {
     db.clearTodaySchedule();
     setIsConfirmResetOpen(false);
+  };
+
+  const handleManualStart = async (courtId: string) => {
+    const success = await db.assignReadyToCourt(courtId);
+
+    if (success && isVoiceEnabled) {
+      // 找到對應場地並播報
+      const court = courts.find(c => c.id === courtId);
+      if (court && court.currentPlayers.length > 0) {
+        speech.announceCourtAssignment(court.name, court.currentPlayers);
+      }
+    }
   };
 
   // 如果未通過驗證，顯示通行碼畫面
@@ -128,6 +158,17 @@ function App() {
                 title="切換主題"
               >
                 {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
+
+              <button
+                onClick={toggleVoice}
+                className={`p-2 rounded-full transition-colors ${isVoiceEnabled
+                  ? 'text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30'
+                  : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  }`}
+                title={isVoiceEnabled ? '語音播報：開啟' : '語音播報：關閉'}
+              >
+                {isVoiceEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
               </button>
 
               <div
@@ -235,7 +276,7 @@ function App() {
                   queueLength={readyQueue.length}
                   onEndMatch={db.endMatch}
                   onRemoveCourt={db.removeCourt}
-                  onManualStart={db.assignReadyToCourt}
+                  onManualStart={handleManualStart}
                 />
               ))}
             </div>
