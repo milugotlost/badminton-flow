@@ -11,8 +11,11 @@ export interface Player {
  * @param players 球員列表
  */
 export const announceCourtAssignment = (courtName: string, players: Player[]) => {
+    console.log('[Voice] 嘗試播報:', { courtName, players });
+
     if (!('speechSynthesis' in window)) {
-        console.warn('此瀏覽器不支援語音播報功能');
+        console.error('[Voice] 此瀏覽器不支援語音播報功能');
+        alert('您的瀏覽器不支援語音播報功能');
         return;
     }
 
@@ -23,6 +26,8 @@ export const announceCourtAssignment = (courtName: string, players: Player[]) =>
     const playerNames = players.map(p => p.displayName).join('、');
     const message = `請注意！${courtName}，${playerNames}，請到場比賽`;
 
+    console.log('[Voice] 播報內容:', message);
+
     // 建立語音物件
     const utterance = new SpeechSynthesisUtterance(message);
 
@@ -32,7 +37,13 @@ export const announceCourtAssignment = (courtName: string, players: Player[]) =>
     utterance.pitch = 1; // 音調（0-2，預設1）
     utterance.volume = 1; // 音量（0-1，預設1）
 
+    // 監聽事件
+    utterance.onstart = () => console.log('[Voice] 開始播報');
+    utterance.onend = () => console.log('[Voice] 播報結束');
+    utterance.onerror = (e) => console.error('[Voice] 播報錯誤:', e);
+
     // 播放
+    console.log('[Voice] 執行播放...');
     window.speechSynthesis.speak(utterance);
 };
 

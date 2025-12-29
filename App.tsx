@@ -119,18 +119,35 @@ function App() {
   };
 
   const handleManualStart = async (courtId: string) => {
+    console.log('[Debug] 手動開場觸發', { courtId, isVoiceEnabled });
+
     // 在分配前先保存準備區的球員資料（用於播報）
     const playersToAnnounce = [...readyQueue];
     const court = courts.find(c => c.id === courtId);
 
+    console.log('[Debug] 準備播報資料', { court: court?.name, players: playersToAnnounce });
+
     const success = await db.assignReadyToCourt(courtId);
 
     if (success && isVoiceEnabled && court && playersToAnnounce.length > 0) {
+      console.log('[Debug] 即將播報...');
       // 稍微延遲播報，確保畫面已更新
       setTimeout(() => {
         speech.announceCourtAssignment(court.name, playersToAnnounce);
       }, 300);
+    } else {
+      console.log('[Debug] 播報條件不滿足', { success, isVoiceEnabled, hasCourt: !!court, playerCount: playersToAnnounce.length });
     }
+  };
+
+  const testVoice = () => {
+    console.log('[Debug] 測試語音播報');
+    speech.announceCourtAssignment('測試場地', [
+      { displayName: '張三' },
+      { displayName: '李四' },
+      { displayName: '王五' },
+      { displayName: '趙六' }
+    ]);
   };
 
   // 如果未通過驗證，顯示通行碼畫面
@@ -166,13 +183,23 @@ function App() {
               <button
                 onClick={toggleVoice}
                 className={`p-2 rounded-full transition-colors ${isVoiceEnabled
-                  ? 'text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30'
-                  : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    ? 'text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30'
+                    : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                 title={isVoiceEnabled ? '語音播報：開啟' : '語音播報：關閉'}
               >
                 {isVoiceEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
               </button>
+
+              {isVoiceEnabled && (
+                <button
+                  onClick={testVoice}
+                  className="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+                  title="測試語音播報"
+                >
+                  測試播報
+                </button>
+              )}
 
               <div
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-full border cursor-pointer transition-all select-none active:scale-95 ${isAdmin
