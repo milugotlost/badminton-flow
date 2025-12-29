@@ -147,6 +147,15 @@ function App() {
     }
   };
 
+  const testVoice = () => {
+    speech.announceCourtAssignment('測試場地', [
+      { displayName: '張三' },
+      { displayName: '李四' },
+      { displayName: '王五' },
+      { displayName: '趙六' }
+    ]);
+  };
+
 
   if (!isAccessGranted) {
     return <AccessCodeModal onAccessGranted={() => setIsAccessGranted(true)} />;
