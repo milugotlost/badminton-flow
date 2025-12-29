@@ -120,14 +120,28 @@ const CourtCard: React.FC<CourtCardProps> = ({ court, isAdmin, queueLength, isVo
               </Button>
             )}
             {court.status === 'occupied' && (
-              <Button
-                variant="danger"
-                size="sm"
-                icon={<StopCircle className="w-4 h-4" />}
-                onClick={() => onEndMatch(court.id)}
-              >
-                結束比賽
-              </Button>
+              <>
+                {isVoiceEnabled && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon={<Volume2 className="w-4 h-4" />}
+                    onClick={() => onAnnounce(court.name, court.currentPlayers)}
+                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                    title="播報此場球員"
+                  >
+                    播報
+                  </Button>
+                )}
+                <Button
+                  variant="danger"
+                  size="sm"
+                  icon={<StopCircle className="w-4 h-4" />}
+                  onClick={() => onEndMatch(court.id)}
+                >
+                  結束比賽
+                </Button>
+              </>
             )}
           </div>
         </div>
