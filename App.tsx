@@ -119,14 +119,17 @@ function App() {
   };
 
   const handleManualStart = async (courtId: string) => {
+    // 在分配前先保存準備區的球員資料（用於播報）
+    const playersToAnnounce = [...readyQueue];
+    const court = courts.find(c => c.id === courtId);
+
     const success = await db.assignReadyToCourt(courtId);
 
-    if (success && isVoiceEnabled) {
-      // 找到對應場地並播報
-      const court = courts.find(c => c.id === courtId);
-      if (court && court.currentPlayers.length > 0) {
-        speech.announceCourtAssignment(court.name, court.currentPlayers);
-      }
+    if (success && isVoiceEnabled && court && playersToAnnounce.length > 0) {
+      // 稍微延遲播報，確保畫面已更新
+      setTimeout(() => {
+        speech.announceCourtAssignment(court.name, playersToAnnounce);
+      }, 300);
     }
   };
 
