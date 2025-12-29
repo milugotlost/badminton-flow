@@ -234,13 +234,15 @@ export const endMatch = async (courtId: string) => {
 };
 
 export const assignReadyToCourt = async (courtId: string) => {
-  // 1. Get ready players
+  // 1. Get ready players (fetch full data for voice announcement)
   const { data: readyPlayers } = await supabase
     .from('players')
-    .select('id')
-    .eq('status', 'ready');
+    .select('*')
+    .eq('status', 'ready')
+    .order('check_in_time', { ascending: true })
+    .limit(MAX_PLAYERS_PER_COURT);
 
-  if (!readyPlayers || readyPlayers.length === 0) return false;
+  if (!readyPlayers || readyPlayers.length < MAX_PLAYERS_PER_COURT) return null;
 
   const playerIds = readyPlayers.map(p => p.id);
 
@@ -256,7 +258,14 @@ export const assignReadyToCourt = async (courtId: string) => {
     match_start_time: Date.now()
   }).eq('id', courtId);
 
-  return true;
+  // 回傳球員資料供語音播報使用
+  return readyPlayers.map((p: any) => ({
+    id: p.id,
+    displayName: p.display_name,
+    photoURL: p.photo_url,
+    checkInTime: p.check_in_time,
+    status: 'playing' as const
+  }));
 };
 
 // Automation logic (running on client is tricky if multiple admins are open, race conditions possible)

@@ -121,22 +121,22 @@ function App() {
   const handleManualStart = async (courtId: string) => {
     console.log('[Debug] 手動開場觸發', { courtId, isVoiceEnabled });
 
-    // 在分配前先保存準備區的球員資料（用於播報）
-    const playersToAnnounce = [...readyQueue];
     const court = courts.find(c => c.id === courtId);
+    if (!court) return;
 
-    console.log('[Debug] 準備播報資料', { court: court?.name, players: playersToAnnounce });
+    // 執行分配並取得被分配的球員資料
+    const assignedPlayers = await db.assignReadyToCourt(courtId);
 
-    const success = await db.assignReadyToCourt(courtId);
+    console.log('[Debug] 分配結果', { court: court.name, assignedPlayers });
 
-    if (success && isVoiceEnabled && court && playersToAnnounce.length > 0) {
+    // 如果分配成功且語音開啟，則播報
+    if (assignedPlayers && isVoiceEnabled) {
       console.log('[Debug] 即將播報...');
-      // 稍微延遲播報，確保畫面已更新
       setTimeout(() => {
-        speech.announceCourtAssignment(court.name, playersToAnnounce);
-      }, 300);
+        speech.announceCourtAssignment(court.name, assignedPlayers);
+      }, 500);
     } else {
-      console.log('[Debug] 播報條件不滿足', { success, isVoiceEnabled, hasCourt: !!court, playerCount: playersToAnnounce.length });
+      console.log('[Debug] 播報條件不滿足', { hasPlayers: !!assignedPlayers, isVoiceEnabled });
     }
   };
 
@@ -183,8 +183,8 @@ function App() {
               <button
                 onClick={toggleVoice}
                 className={`p-2 rounded-full transition-colors ${isVoiceEnabled
-                    ? 'text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30'
-                    : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  ? 'text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30'
+                  : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                 title={isVoiceEnabled ? '語音播報：開啟' : '語音播報：關閉'}
               >
