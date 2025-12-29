@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Clock, User as UserIcon, Trash2, StopCircle, PlayCircle } from 'lucide-react';
+import { Clock, User as UserIcon, Trash2, StopCircle, PlayCircle, Volume2 } from 'lucide-react';
 import { Court } from '../types';
 import Button from './Button';
 import { MAX_PLAYERS_PER_COURT } from '../constants';
@@ -8,12 +8,14 @@ interface CourtCardProps {
   court: Court;
   isAdmin: boolean;
   queueLength: number;
+  isVoiceEnabled: boolean;
   onEndMatch: (id: string) => void;
   onRemoveCourt: (id: string) => void;
   onManualStart: (id: string) => void;
+  onAnnounce: (courtName: string, players: any[]) => void;
 }
 
-const CourtCard: React.FC<CourtCardProps> = ({ court, isAdmin, queueLength, onEndMatch, onRemoveCourt, onManualStart }) => {
+const CourtCard: React.FC<CourtCardProps> = ({ court, isAdmin, queueLength, isVoiceEnabled, onEndMatch, onRemoveCourt, onManualStart, onAnnounce }) => {
   const [elapsedTime, setElapsedTime] = useState<string>('00:00');
 
   useEffect(() => {
@@ -37,8 +39,8 @@ const CourtCard: React.FC<CourtCardProps> = ({ court, isAdmin, queueLength, onEn
   return (
     <div className={`
       relative overflow-hidden rounded-xl border p-4 shadow-sm transition-all
-      ${court.status === 'occupied' 
-        ? 'bg-blue-50/50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800' 
+      ${court.status === 'occupied'
+        ? 'bg-blue-50/50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800'
         : 'bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700'
       }
     `}>
@@ -54,7 +56,7 @@ const CourtCard: React.FC<CourtCardProps> = ({ court, isAdmin, queueLength, onEn
             {court.status === 'occupied' ? '比賽中' : '場地空閒'}
           </p>
         </div>
-        
+
         {court.status === 'occupied' && (
           <div className="flex items-center gap-1.5 bg-white dark:bg-gray-900 px-2 py-1 rounded-md border border-gray-200 dark:border-gray-700 shadow-sm">
             <Clock className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
@@ -68,9 +70,9 @@ const CourtCard: React.FC<CourtCardProps> = ({ court, isAdmin, queueLength, onEn
           <div className="grid grid-cols-2 gap-3">
             {court.currentPlayers.map((player) => (
               <div key={player.id} className="flex items-center gap-2 bg-white/60 dark:bg-gray-700/50 p-2 rounded-lg">
-                <img 
-                  src={player.photoURL} 
-                  alt={player.displayName} 
+                <img
+                  src={player.photoURL}
+                  alt={player.displayName}
                   className="w-8 h-8 rounded-full bg-gray-200"
                 />
                 <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
@@ -92,42 +94,42 @@ const CourtCard: React.FC<CourtCardProps> = ({ court, isAdmin, queueLength, onEn
 
       {isAdmin && (
         <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex gap-2 justify-between items-center">
-           <div>
+          <div>
             {court.status === 'empty' && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => onRemoveCourt(court.id)}
-                  className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                  title="刪除場地"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              )}
-           </div>
-           <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onRemoveCourt(court.id)}
+                className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                title="刪除場地"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
+          <div className="flex gap-2">
             {canManualStart && (
-                <Button 
-                  variant="primary" 
-                  size="sm" 
-                  icon={<PlayCircle className="w-4 h-4" />}
-                  onClick={() => onManualStart(court.id)}
-                  className="bg-green-600 hover:bg-green-700"
-                >
-                  手動開場
-                </Button>
-              )}
-              {court.status === 'occupied' && (
-                <Button 
-                  variant="danger" 
-                  size="sm" 
-                  icon={<StopCircle className="w-4 h-4" />}
-                  onClick={() => onEndMatch(court.id)}
-                >
-                  結束比賽
-                </Button>
-              )}
-           </div>
+              <Button
+                variant="primary"
+                size="sm"
+                icon={<PlayCircle className="w-4 h-4" />}
+                onClick={() => onManualStart(court.id)}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                手動開場
+              </Button>
+            )}
+            {court.status === 'occupied' && (
+              <Button
+                variant="danger"
+                size="sm"
+                icon={<StopCircle className="w-4 h-4" />}
+                onClick={() => onEndMatch(court.id)}
+              >
+                結束比賽
+              </Button>
+            )}
+          </div>
         </div>
       )}
     </div>

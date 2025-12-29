@@ -140,17 +140,14 @@ function App() {
     }
   };
 
-  const testVoice = () => {
-    console.log('[Debug] 測試語音播報');
-    speech.announceCourtAssignment('測試場地', [
-      { displayName: '張三' },
-      { displayName: '李四' },
-      { displayName: '王五' },
-      { displayName: '趙六' }
-    ]);
+  const handleAnnounce = (courtName: string, players: any[]) => {
+    if (isVoiceEnabled) {
+      console.log('[Debug] 手動播報', { courtName, players });
+      speech.announceCourtAssignment(courtName, players);
+    }
   };
 
-  // 如果未通過驗證，顯示通行碼畫面
+
   if (!isAccessGranted) {
     return <AccessCodeModal onAccessGranted={() => setIsAccessGranted(true)} />;
   }
@@ -304,9 +301,11 @@ function App() {
                   court={court}
                   isAdmin={isAdmin}
                   queueLength={readyQueue.length}
+                  isVoiceEnabled={isVoiceEnabled}
                   onEndMatch={db.endMatch}
                   onRemoveCourt={db.removeCourt}
                   onManualStart={handleManualStart}
+                  onAnnounce={handleAnnounce}
                 />
               ))}
             </div>
