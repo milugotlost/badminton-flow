@@ -181,11 +181,11 @@ export const clearTodaySchedule = async () => {
   }).neq('id', 'placeholder');
 };
 
-export const checkInUser = async (displayName: string) => {
+export const checkInUser = async (displayName: string, avatarSeed?: string) => {
   await supabase.from('players').insert({
     id: `u-${Date.now()}`,
     display_name: displayName,
-    photo_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${displayName}`,
+    photo_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${avatarSeed || displayName}`,
     check_in_time: Date.now(),
     status: 'queueing'
   });

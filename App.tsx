@@ -147,14 +147,7 @@ function App() {
     }
   };
 
-  const testVoice = () => {
-    speech.announceCourtAssignment('測試場地', [
-      { displayName: '張三' },
-      { displayName: '李四' },
-      { displayName: '王五' },
-      { displayName: '趙六' }
-    ]);
-  };
+
 
 
   if (!isAccessGranted) {
@@ -197,15 +190,6 @@ function App() {
                 {isVoiceEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
               </button>
 
-              {isVoiceEnabled && (
-                <button
-                  onClick={testVoice}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors"
-                  title="測試語音播報"
-                >
-                  測試播報
-                </button>
-              )}
 
               <div
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-full border cursor-pointer transition-all select-none active:scale-95 ${isAdmin
