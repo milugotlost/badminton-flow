@@ -61,6 +61,12 @@ function App() {
       setIsDarkMode(true);
       document.documentElement.classList.add('dark');
     }
+
+    // 檢查 Supabase 設定 (本地開發防呆)
+    if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+      console.warn('⚠️ 缺少 Supabase 設定，請檢查 .env 檔案');
+      alert('【本地模式警告】\n\n偵測到缺少 Supabase 設定 (VITE_SUPABASE_URL / ANON_KEY)。\n\n會員與場地功能將無法正常顯示數據。\n請將 .env.example 複製為 .env 並填入正確的 Key。');
+    }
   }, []);
 
   // 數據訂閱

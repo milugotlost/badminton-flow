@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, QrCode, RefreshCw } from 'lucide-react';
+import { X, QrCode, RefreshCw, User as UserIcon } from 'lucide-react';
 import Button from './Button';
 
 interface CheckInModalProps {
@@ -11,11 +11,13 @@ interface CheckInModalProps {
 const CheckInModal: React.FC<CheckInModalProps> = ({ isOpen, onClose, onSubmit }) => {
   const [name, setName] = useState('');
   const [avatarSeed, setAvatarSeed] = useState('');
+  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setAvatarSeed(Math.random().toString(36).substring(7));
       setName('');
+      setImgError(false);
     }
   }, [isOpen]);
 
@@ -31,6 +33,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ isOpen, onClose, onSubmit }
 
   const refreshAvatar = () => {
     setAvatarSeed(Math.random().toString(36).substring(7));
+    setImgError(false);
   };
 
   return (
@@ -52,11 +55,19 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ isOpen, onClose, onSubmit }
 
         <div className="text-center mb-6">
           <div className="mx-auto w-24 h-24 relative mb-4">
-            <img
-              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${avatarSeed}`}
-              alt="Avatar Preview"
-              className="w-full h-full rounded-full bg-gray-100 dark:bg-gray-700"
-            />
+            {imgError ? (
+              <div className="w-full h-full rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-4xl text-gray-400">
+                <UserIcon className="w-12 h-12" />
+              </div>
+            ) : (
+              <img
+                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${avatarSeed}`}
+                alt="Avatar Preview"
+                className="w-full h-full rounded-full bg-gray-100 dark:bg-gray-700 object-cover"
+                onError={() => setImgError(true)}
+              />
+            )}
+
             <button
               type="button"
               onClick={refreshAvatar}
